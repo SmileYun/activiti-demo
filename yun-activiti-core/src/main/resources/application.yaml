@@ -1,0 +1,101 @@
+spring:
+  application:
+    name: ${ACT_RB_APP_NAME:sample-activiti7-yun-core}
+  rabbitmq:
+    host: 192.168.3.201
+    password: guest
+    username: guest
+    port: 30672 # 5672
+  main:
+    allow-bean-definition-overriding: true
+  cloud:
+    stream:
+      bindings:
+        etiquette:
+          # need a bean
+          destination: ayunb # etiquetteReceptionChannels
+          contentType: application/json
+          group: ayunaGroup
+#        auditProducer:
+#          destination: ${ACT_RB_AUDIT_PRODUCER_DEST:engineEvents}
+#          contentType: ${ACT_RB_AUDIT_PRODUCER_CONTENT_TYPE:application/json}
+#        myCmdResults:
+#          destination: ${ACT_RB_COMMAND_RESULTS_DEST:commandResults}
+#          group: ${ACT_RB_COMMAND_RESULTS_GROUP:myCmdGroup}
+#          contentType: ${ACT_RB_COMMAND_RESULTS_CONTENT_TYPE:application/json}
+#        myCmdProducer:
+#          destination: ${ACT_RB_COMMAND_RESULTS_DEST:commandResults}
+#          contentType: ${ACT_RB_COMMAND_RESULTS_CONTENT_TYPE:application/json}
+#        signalProducer:
+#          destination: ${ACT_RB_SIGNAL_PRODUCER_DEST:signalEvent}
+#          contentType: ${ACT_RB_SIGNAL_PRODUCER_CONTENT_TYPE:application/json}
+#        signalConsumer:
+#          destination: ${ACT_RB_SIGNAL_CONSUMER_DEST:signalEvent}
+#          group: ${ACT_RB_SIGNAL_CONSUMER_GROUP:mySignalConsumerGroup}
+#          contentType: ${ACT_RB_SIGNAL_CONSUMER_CONTENT_TYPE:application/json}
+  jackson:
+    serialization:
+      fail-on-unwrapped-type-identifiers: ${ACT_RB_JACKSON_FAIL_ON_UNWRAPPED_IDS:false}
+  activiti:
+    use-strong-uuids: true
+    history-level: full
+    db-history-used: true
+    copy-variables-to-local-for-tasks: false
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.4.204:30045/activiti-yun?verifyServerCertificate=false&useSSL=false&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false
+    type: com.zaxxer.hikari.HikariDataSource
+    username: root
+    password: poly2017
+
+# pattern不要加入servlet:context-path ，keycloak拦截已加上上下文
+keycloak:
+  enabled: true #是否开启keycloak验证开关
+  public-client: ${ACT_KEYCLOAK_CLIENT:true}
+  auth-server-url: http://192.168.4.204:8180/auth/ #keycloak服务器地址
+  realm: ${ACT_KEYCLOAK_REALM:activiti} #项目命名空间  realmA和realmB中用户完全隔离
+  resource: ${ACT_KEYCLOAK_RESOURCE:activiti} #资源名称 微服务项目名 client
+  ssl-required: ${ACT_KEYCLOAK_SSL_REQUIRED:none} # external  是否开启ssl认证
+  security-constraints:
+    - authRoles: # - example-iu-ms-acti  #角色名称 无角色不拦截，即下面路径为过滤不拦截的路径
+      - ${ACT_KEYCLOAK_USER_ROLE:ACTIVITI_USER}
+      security-collections:
+      - patterns: #拦截url规则
+          - ${ACT_KEYCLOAK_PATTERNS:/v1/*}
+    - authRoles:
+        - ${ACT_KEYCLOAK_ADMIN_ROLE:ACTIVITI_ADMIN}
+      security-collections:
+        - patterns:
+            - /admin/*
+
+server:
+  port: 8557
+  servlet:
+    context-path: /sample-activiti7-yun-core
+logging:
+  level:
+    org.keycloak: debug
+    org.activiti: debug
+
+activiti:
+  cloud:
+    application:
+      name: sample-activiti7-yun-core
+  keycloak:
+    client-user: ${ACT_KEYCLOAK_CLIENT_USER:yun} # client
+    client-password: ${ACT_KEYCLOAK_CLIENT_PASSWORD:123} # client
+    admin-client-app: activiti
+
+
+xxl:
+  job:
+    admin:
+      # xxl-job admin address list, such as "http://address" or "http://address01,http://address02"
+      addresses: http://127.0.0.1:8060/xxl-job-admin
+    executor:
+      appname: ${spring.application.name}
+      ip: 192.168.3.21
+      port: 9998 # ${server.port}
+      logpath: D:/log/xxl-job/jobhandler
+      logretentiondays: -1
+#    accessToken:
