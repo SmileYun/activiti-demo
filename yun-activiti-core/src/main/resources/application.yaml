@@ -1,11 +1,11 @@
 spring:
   application:
     name: ${ACT_RB_APP_NAME:sample-activiti7-yun-core}
-  rabbitmq:
-    host: 192.168.3.201
-    password: guest
-    username: guest
-    port: 30672 # 5672
+#  rabbitmq:
+#    host: 192.168.3.201
+#    password: guest
+#    username: guest
+#    port: 30672 # 5672
   main:
     allow-bean-definition-overriding: true
   cloud:
@@ -41,14 +41,6 @@ spring:
     history-level: full
     db-history-used: true
     copy-variables-to-local-for-tasks: false
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.4.204:30045/activiti-yun?verifyServerCertificate=false&useSSL=false&useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false
-    type: com.zaxxer.hikari.HikariDataSource
-    username: root
-    password: poly2017
-
-# pattern不要加入servlet:context-path ，keycloak拦截已加上上下文
 keycloak:
   enabled: true #是否开启keycloak验证开关
   public-client: ${ACT_KEYCLOAK_CLIENT:true}
@@ -61,7 +53,7 @@ keycloak:
       - ${ACT_KEYCLOAK_USER_ROLE:ACTIVITI_USER}
       security-collections:
       - patterns: #拦截url规则
-          - ${ACT_KEYCLOAK_PATTERNS:/v1/*}
+          - /*
     - authRoles:
         - ${ACT_KEYCLOAK_ADMIN_ROLE:ACTIVITI_ADMIN}
       security-collections:
@@ -72,11 +64,11 @@ server:
   port: 8557
   servlet:
     context-path: /sample-activiti7-yun-core
-logging:
-  level:
-    org.keycloak: debug
-    org.activiti: debug
-
+#logging:
+#  level:
+#    org.keycloak: debug
+#    org.activiti: debug
+#
 activiti:
   cloud:
     application:
@@ -87,15 +79,3 @@ activiti:
     admin-client-app: activiti
 
 
-xxl:
-  job:
-    admin:
-      # xxl-job admin address list, such as "http://address" or "http://address01,http://address02"
-      addresses: http://127.0.0.1:8060/xxl-job-admin
-    executor:
-      appname: ${spring.application.name}
-      ip: 192.168.3.21
-      port: 9998 # ${server.port}
-      logpath: D:/log/xxl-job/jobhandler
-      logretentiondays: -1
-#    accessToken:

@@ -29,8 +29,8 @@ public class TaskListenerConfig {
     @Autowired
     ProcessEngine processEngine;
 
-    @Autowired
-    TaskRuntime taskRuntime;
+//    @Autowired
+//    TaskRuntime taskRuntime;
 
     @Bean
     public TaskRuntimeEventListener<TaskAssignedEvent> receptionTaskAssignedListener() {
